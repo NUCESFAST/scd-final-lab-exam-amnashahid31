@@ -1,0 +1,75 @@
+pipeline {
+    agent any
+    
+    stages {
+        stage('Checkout1148') {
+            steps {
+                // Checkout code from GitHub repository
+                git 'https://github.com/NUCESFAST/scd-final-lab-exam-amnashahid31.git'
+            }
+        }
+        
+        stage('Install Dependencies1148') {
+            steps {
+                // Install dependencies (e.g., npm install, pip install, etc.)
+                sh 'npm install' // Example for Node.js project
+            }
+        }
+        
+        stage('Build and Test Image for auth1148') {
+            steps {
+                sh 'cd scd-final-lab-exam-amnashahid31/Auth/Dockerfile && docker build -t auth_backendimage .'
+                sh 'docker run --rm auth_backendimage sh -c "npm test"'
+            }
+        }
+        
+        stage('Build and Test Image Classrooms1148') {
+            steps {
+                sh 'cd scd-final-lab-exam-amnashahid31/Classrooms/Dockerfile && docker build -t classrooms_backendimage .'
+                sh 'docker run --rm Classrooms_backendimage sh -c "npm test"'
+            }
+        }
+
+        stage('Build and Test Image client1148') {
+            steps {
+                sh 'cd scd-final-lab-exam-amnashahid31/client/Dockerfile && docker build -t client_frontendimage .'
+                sh 'docker run --rm client_frontendimage sh -c "npm test"'
+            }
+        }
+
+        stage('Build and Test Image event-bus1148') {
+            steps {
+                sh 'cd scd-final-lab-exam-amnashahid31/event-bus/Dockerfile && docker build -t event_bus_backendimage .'
+                sh 'docker run --rm event_bus_backendimage sh -c "npm test"'
+            }
+        }
+
+        stage('Build and Test Image Post') {
+            steps {
+                sh 'cd scd-final-lab-exam-amnashahid31/Post/Dockerfile && docker build -t post_backendimage1148 .'
+                sh 'docker run --rm post_backendimage sh -c "npm test"'
+            }
+        }
+        
+        stage('Push Docker Image to Docker Hub') {
+            steps {
+                // Push Docker image to Docker Hub
+                withCredentials([usernamePassword(credentialsId: 'dockerhub-credentials', usernameVariable: 'DOCKER_USERNAME', passwordVariable: 'DOCKER_PASSWORD')]) {
+                    echo 'docker login -u $DOCKER_USERNAME -p $DOCKER_PASSWORD'
+                    echo 'docker push yourdockerhubusername/yourimagename'
+                }
+            }
+        }
+        
+        stage('Validate Functionality') {
+            steps {
+                // Run tests or validation scripts in containerized environment
+                sh 'docker run auth_backendimage sh -c "npm test"'
+                sh 'docker run Classrooms_backendimage sh -c "npm test"'
+                sh 'docker run client_frontendimage sh -c "npm test"'
+                sh 'docker run event_bus_backendimage sh -c "npm test"'
+                sh 'docker run post_backendimage sh -c "npm test"'
+            }
+        }
+    }
+}

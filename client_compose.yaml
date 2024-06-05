@@ -1,0 +1,36 @@
+#This is compose file for client
+
+version: '3.8'
+
+services:
+  client:
+    image: client:latest
+    build:
+      context: ./client
+      dockerfile: Dockerfile
+    ports:
+      - "80:80"
+    depends_on:
+      - api
+
+  api:
+    image: api:latest
+    build:
+      context: ./api
+      dockerfile: Dockerfile
+    ports:
+      - "11148:11148"
+    environment:
+      - MONGODB_URI=mongodb://mongodb:27017/mongo
+    depends_on:
+      - mongodb
+
+  mongodb:
+    image: mongo
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongodb_data:/data/db
+
+volumes:
+  mongodb_data:

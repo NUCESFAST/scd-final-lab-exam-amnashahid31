@@ -1,0 +1,11 @@
+# compose.yaml file for auth module's backend
+
+version: '3.8'
+
+services:
+  auth:
+    build: ./Auth
+    ports:
+      - "11148:11148"
+    expose:
+      - "27017"

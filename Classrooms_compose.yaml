@@ -1,0 +1,11 @@
+#This is compose file for classrooms
+
+version: '3.8'
+
+services:
+  classrooms:
+    build: ./Classrooms
+    ports:
+      - "21148:21148"
+    expose:
+      - "27017"
